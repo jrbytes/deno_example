@@ -6,7 +6,7 @@ interface Launch {
   mission: string
   rocket: string
   customers: Array<string>
-  lauchDate: number
+  launchDate: number
   upcoming: boolean
   success?: boolean
   target?: string
@@ -39,7 +39,7 @@ export async function downloadLauchData() {
       flightNumber: launch['flight_number'],
       mission: launch['mission_name'],
       rocket: launch['rocket']['rocket_name'],
-      lauchDate: launch['launch_date_unix'],
+      launchDate: launch['launch_date_unix'],
       upcoming: launch['upcoming'],
       success: launch['launch_success'],
       customers,
@@ -56,4 +56,27 @@ log.info(`Downloaded data for ${launches.size} SpaceX launches.`)
 
 export function getAll() {
   return Array.from(launches.values())
+}
+
+export function getOne(id: number) {
+  if (launches.has(id)) {
+    return launches.get(id)
+  }
+  return null
+}
+
+export function removeOne(id: number) {
+  const aborted = launches.get(id)
+  if (aborted) {
+    aborted.upcoming = false
+    aborted.success = false
+  }
+  return aborted
+}
+
+export function addOne(data: Launch) {
+  launches.set(data.flightNumber, Object.assign(data, {
+    upcoming: true,
+    customers: ['Bytes', 'NASA'],
+  }))
 }
